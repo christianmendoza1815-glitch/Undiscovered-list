@@ -324,14 +324,32 @@ element("levelForm").addEventListener("submit", async event => {
 });
 
 async function updateSession() {
-  const {data} = await db.auth.getSession();
+  const { data, error } = await db.auth.getSession();
   const session = data.session;
 
-  if (!session) {
+  if (error || !session) {
     element("loginArea").classList.remove("hidden");
     element("adminArea").classList.add("hidden");
     return;
   }
+
+  const { data: admin, error: adminError } =
+    await db.rpc("is_admin");
+
+  if (adminError || admin !== true) {
+    element("loginArea").classList.remove("hidden");
+    element("adminArea").classList.add("hidden");
+    element("loginMessage").textContent =
+      "No se pudieron verificar tus permisos de administrador.";
+    return;
+  }
+
+  element("loginArea").classList.add("hidden");
+  element("adminArea").classList.remove("hidden");
+  element("loginMessage").textContent = "";
+
+  await loadAdminRecords();
+}
 
   const {data: admin, error} = await db.rpc("is_admin");
 
