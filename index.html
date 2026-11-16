@@ -333,11 +333,9 @@ async function updateSession() {
     return;
   }
 
-  const {data: admin, error} = await db
-    .from("admins")
-    .select("user_id")
-    .eq("user_id", session.user.id)
-    .maybeSingle();
+  const {data: admin, error} = await db.rpc("is_admin");
+
+if (error || !admin) {
 
   if (error || !admin) {
     element("loginArea").classList.remove("hidden");
