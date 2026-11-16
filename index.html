@@ -1,47 +1,204 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>UNDISCOVERED LIST</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Undiscovered List</title>
 <style>
+* { box-sizing: border-box; }
 body {
-  background: #101014;
-  color: white;
-  font-family: Arial;
   margin: 0;
-  padding: 20px;
+  background: #10121a;
+  color: white;
+  font-family: Arial, sans-serif;
 }
 header {
+  background: #191d2b;
+  padding: 28px 15px;
   text-align: center;
-  color: #e33b3b;
-  padding: 25px;
+  border-bottom: 2px solid #536dfe;
 }
-.level {
-  background: #222229;
-  padding: 18px;
-  margin: 12px auto;
-  max-width: 600px;
+header h1 { color: #8295ff; margin: 0; }
+header p { color: #aaa; }
+nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 15px;
+  background: #191d2b;
+}
+nav a {
+  color: white;
+  text-decoration: none;
+  padding: 10px 15px;
+  background: #292e42;
   border-radius: 8px;
 }
-.rank { color: #e33b3b; }
+main { max-width: 850px; margin: auto; padding: 20px; }
+section {
+  background: #191d2b;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+h2 { color: #8295ff; }
+input, textarea, button {
+  width: 100%;
+  padding: 12px;
+  margin: 7px 0;
+  border-radius: 7px;
+  border: 1px solid #414966;
+  background: #10121a;
+  color: white;
+}
+button {
+  background: #536dfe;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+button:hover { background: #4055d6; }
+.item {
+  background: #242a3c;
+  padding: 13px;
+  border-radius: 8px;
+  margin: 10px 0;
+}
+.muted { color: #999; }
+footer { text-align: center; color: #777; padding: 25px; }
 </style>
 </head>
 <body>
+
 <header>
-<h1>UNDISCOVERED LIST</h1>
-<p>Independent Geometry Dash Demon List</p>
+  <h1>UNDISCOVERED LIST</h1>
+  <p>Geometry Dash Community</p>
 </header>
 
-<div class="level">
-<h2><span class="rank">#1</span> Tartarus</h2>
-<p>Creator: Riot</p>
-</div>
+<nav>
+  <a href="#niveles">Niveles</a>
+  <a href="#envios">Enviar récord</a>
+  <a href="#top">Top jugadores</a>
+</nav>
 
-<div class="level">
-<h2><span class="rank">#2</span> Slaughterhouse</h2>
-<p>Creator: icedcave</p>
-</div>
+<main>
 
+<section id="niveles">
+  <h2>Lista de niveles</h2>
+  <p class="muted">Los niveles serán agregados manualmente.</p>
+  <div id="levels">
+    <p class="muted">Todavía no hay niveles agregados.</p>
+  </div>
+</section>
+
+<section id="envios">
+  <h2>Enviar récord</h2>
+  <p class="muted">Demuestra que completaste un nivel.</p>
+
+  <form id="recordForm">
+    <input id="player" placeholder="Nombre de Geometry Dash" required>
+    <input id="country" placeholder="País" required>
+    <input id="video" type="url" placeholder="Link de YouTube" required>
+    <input id="level" placeholder="Nombre del nivel completado" required>
+    <textarea id="description" placeholder="Descripción (opcional)"></textarea>
+    <button type="submit">Enviar récord</button>
+  </form>
+  <p id="message" class="muted"></p>
+</section>
+
+<section id="top">
+  <h2>Top jugadores</h2>
+  <p class="muted">Los puntos se obtienen al aprobar récords.</p>
+  <div id="leaderboard">
+    <p class="muted">Todavía no hay jugadores.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  UND﻿ISCOVERED LIST · Geometry Dash
+</footer>
+
+<script>
+// Lista vacía: tú agregarás los niveles y sus puntos.
+const levels = [];
+
+// Récords de demostración guardados en este navegador.
+const records = [];
+
+function showLevels() {
+  const area = document.getElementById("levels");
+  area.innerHTML = "";
+
+  if (levels.length === 0) {
+    area.innerHTML = '<p class="muted">Todavía no hay niveles agregados.</p>';
+    return;
+  }
+
+  levels.forEach(level => {
+    area.innerHTML += `
+      <div class="item">
+        <strong>${level.name}</strong>
+        <p>${level.points} puntos</p>
+      </div>`;
+  });
+}
+
+function showTop() {
+  const scores = {};
+
+  records.filter(r => r.approved).forEach(r => {
+    scores[r.player] = (scores[r.player] || 0) + r.points;
+  });
+
+  const sorted = Object.entries(scores)
+    .sort((a,b) => b[1] - a[1]);
+
+  const area = document.getElementById("leaderboard");
+  area.innerHTML = "";
+
+  if (!sorted.length) {
+    area.innerHTML = '<p class="muted">Todavía no hay jugadores.</p>';
+    return;
+  }
+
+  sorted.forEach(([name, points], i) => {
+    area.innerHTML += `
+      <div class="item">
+        #${i + 1} — <strong>${name}</strong>
+        <span style="float:right">${points} pts</span>
+      </div>`;
+  });
+}
+
+document.getElementById("recordForm").addEventListener("submit", e => {
+  e.preventDefault();
+
+  const record = {
+    player: document.getElementById("player").value,
+    country: document.getElementById("country").value,
+    video: document.getElementById("video").value,
+    level: document.getElementById("level").value,
+    description: document.getElementById("description").value,
+    points: 0,
+    approved: false
+  };
+
+  records.push(record);
+
+  document.getElementById("message").textContent =
+    "Récord recibido en esta demostración. Aún necesita aprobación.";
+
+  e.target.reset();
+  showTop();
+});
+
+showLevels();
+showTop();
+</script>
 </body>
 </html>
+
