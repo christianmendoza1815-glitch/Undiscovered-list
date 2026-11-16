@@ -289,10 +289,25 @@ element("recordForm").addEventListener("submit", async event => {
 element("loginForm").addEventListener("submit", async event => {
   event.preventDefault();
 
-  const {error} = await db.auth.signInWithPassword({
-    email: element("email").value,
+  const button = event.target.querySelector("button");
+  button.disabled = true;
+  button.textContent = "Logging in...";
+
+  const { error } = await db.auth.signInWithPassword({
+    email: element("email").value.trim(),
     password: element("password").value
   });
+
+  button.disabled = false;
+  button.textContent = "Login";
+
+  if (error) {
+    element("loginMessage").textContent = "Error: " + error.message;
+    return;
+  }
+
+  await updateSession();
+});
 
   if (error) {
     element("loginMessage").textContent =
