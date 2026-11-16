@@ -361,14 +361,7 @@ async function updateSession() {
   await loadAdminRecords();
 }
 
-  if (error || !admin) {
-    element("loginArea").classList.remove("hidden");
-    element("adminArea").classList.add("hidden");
-    element("loginMessage").textContent =
-      "Esta cuenta no tiene permisos de administrador.";
-    await db.auth.signOut();
-    return;
-  }
+  
 
   element("loginArea").classList.add("hidden");
   element("adminArea").classList.remove("hidden");
