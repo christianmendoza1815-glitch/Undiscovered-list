@@ -5,203 +5,365 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Undiscovered List</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background: #10121a;
-  color: white;
-  font-family: Arial, sans-serif;
-}
-header {
-  background: #191d2b;
-  padding: 28px 15px;
-  text-align: center;
-  border-bottom: 2px solid #536dfe;
-}
-header h1 { color: #8295ff; margin: 0; }
-header p { color: #aaa; }
-nav {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  padding: 15px;
-  background: #191d2b;
-}
-nav a {
-  color: white;
-  text-decoration: none;
-  padding: 10px 15px;
-  background: #292e42;
-  border-radius: 8px;
-}
-main { max-width: 850px; margin: auto; padding: 20px; }
-section {
-  background: #191d2b;
-  padding: 20px;
-  border-radius: 12px;
-  margin-bottom: 20px;
-}
-h2 { color: #8295ff; }
-input, textarea, button {
-  width: 100%;
-  padding: 12px;
-  margin: 7px 0;
-  border-radius: 7px;
-  border: 1px solid #414966;
-  background: #10121a;
-  color: white;
-}
-button {
-  background: #536dfe;
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
-}
-button:hover { background: #4055d6; }
-.item {
-  background: #242a3c;
-  padding: 13px;
-  border-radius: 8px;
-  margin: 10px 0;
-}
-.muted { color: #999; }
-footer { text-align: center; color: #777; padding: 25px; }
+*{box-sizing:border-box}
+body{margin:0;background:#10121a;color:white;font-family:Arial,sans-serif}
+header{background:#191d2b;padding:28px 15px;text-align:center;border-bottom:2px solid #536dfe}
+header h1,h2{color:#8295ff}
+header h1{margin:0}
+header p,.muted{color:#aaa}
+nav{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;padding:15px;background:#191d2b}
+nav a{color:white;text-decoration:none;padding:10px 15px;background:#292e42;border-radius:8px}
+main{max-width:850px;margin:auto;padding:20px}
+section{background:#191d2b;padding:20px;border-radius:12px;margin-bottom:20px}
+input,textarea,select,button{width:100%;padding:12px;margin:7px 0;border-radius:7px;border:1px solid #414966;background:#10121a;color:white}
+button{background:#536dfe;border:none;font-weight:bold;cursor:pointer}
+button:hover{background:#4055d6}
+.item{background:#242a3c;padding:13px;border-radius:8px;margin:10px 0;overflow-wrap:anywhere}
+.item button{margin-top:8px}
+footer{text-align:center;color:#777;padding:25px}
+.hidden{display:none}
 </style>
 </head>
 <body>
 
 <header>
-  <h1>UNDISCOVERED LIST</h1>
-  <p>Geometry Dash Community</p>
+<h1>UNDISCOVERED LIST</h1>
+<p>Geometry Dash Community</p>
 </header>
 
 <nav>
-  <a href="#niveles">Niveles</a>
-  <a href="#envios">Enviar récord</a>
-  <a href="#top">Top jugadores</a>
+<a href="#niveles">Niveles</a>
+<a href="#envios">Enviar récord</a>
+<a href="#top">Top jugadores</a>
+<a href="#admin">Administrador</a>
 </nav>
 
 <main>
 
 <section id="niveles">
-  <h2>Lista de niveles</h2>
-  <p class="muted">Los niveles serán agregados manualmente.</p>
-  <div id="levels">
-    <p class="muted">Todavía no hay niveles agregados.</p>
-  </div>
+<h2>Lista de niveles</h2>
+<p class="muted">Los niveles serán agregados manualmente.</p>
+<div id="levels">Cargando niveles...</div>
 </section>
 
 <section id="envios">
-  <h2>Enviar récord</h2>
-  <p class="muted">Demuestra que completaste un nivel.</p>
-
-  <form id="recordForm">
-    <input id="player" placeholder="Nombre de Geometry Dash" required>
-    <input id="country" placeholder="País" required>
-    <input id="video" type="url" placeholder="Link de YouTube" required>
-    <input id="level" placeholder="Nombre del nivel completado" required>
-    <textarea id="description" placeholder="Descripción (opcional)"></textarea>
-    <button type="submit">Enviar récord</button>
-  </form>
-  <p id="message" class="muted"></p>
+<h2>Enviar récord</h2>
+<p class="muted">Demuestra que completaste un nivel.</p>
+<form id="recordForm">
+<input id="player" placeholder="Nombre de Geometry Dash" required>
+<input id="country" placeholder="País" required>
+<input id="video" type="url" placeholder="Link de YouTube" required>
+<select id="level" required>
+<option value="">Selecciona un nivel</option>
+</select>
+<textarea id="description" placeholder="Descripción (opcional)"></textarea>
+<button type="submit">Enviar récord</button>
+</form>
+<p id="message" class="muted"></p>
 </section>
 
 <section id="top">
-  <h2>Top jugadores</h2>
-  <p class="muted">Los puntos se obtienen al aprobar récords.</p>
-  <div id="leaderboard">
-    <p class="muted">Todavía no hay jugadores.</p>
-  </div>
+<h2>Top jugadores</h2>
+<p class="muted">Los puntos se obtienen al aprobar récords.</p>
+<div id="leaderboard">Cargando ranking...</div>
+</section>
+
+<section id="admin">
+<h2>Administrador</h2>
+<div id="loginArea">
+<p class="muted">Inicia sesión con la cuenta creada en Supabase.</p>
+<form id="loginForm">
+<input id="email" type="email" placeholder="Correo electrónico" required>
+<input id="password" type="password" placeholder="Contraseña" required>
+<button type="submit">Iniciar sesión</button>
+</form>
+<p id="loginMessage" class="muted"></p>
+</div>
+
+<div id="adminArea" class="hidden">
+<p>Sesión iniciada.</p>
+<button id="logout">Cerrar sesión</button>
+
+<h3>Agregar nivel</h3>
+<form id="levelForm">
+<input id="newLevel" placeholder="Nombre del nivel" required>
+<input id="newPoints" type="number" min="0" placeholder="Puntos" required>
+<button type="submit">Agregar nivel</button>
+</form>
+<p id="levelMessage" class="muted"></p>
+
+<h3>Récords recibidos</h3>
+<div id="pendingRecords">Cargando récords...</div>
+</div>
 </section>
 
 </main>
 
-<footer>
-  UND﻿ISCOVERED LIST · Geometry Dash
-</footer>
+<footer>UNDISCOVERED LIST · Geometry Dash</footer>
 
 <script>
-// Lista vacía: tú agregarás los niveles y sus puntos.
-const levels = [const levels = [
-  { name: "NOMBRE DEL NIVEL", points: 100 },
-  { name: "OTRO NIVEL", points: 50 }
-];
+const SUPABASE_URL = "https://ktkwmbpadsmedmechukr.supabase.co";
+const SUPABASE_KEY = "sb_publishable_qxi_esdrscUfYVp2A5bAow_CrQt7Z0N";
 
-// Récords de demostración guardados en este navegador.
-const records = [];
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-function showLevels() {
-  const area = document.getElementById("levels");
-  area.innerHTML = "";
+let currentLevels = [];
 
-  if (levels.length === 0) {
-    area.innerHTML = '<p class="muted">Todavía no hay niveles agregados.</p>';
+function element(id) {
+  return document.getElementById(id);
+}
+
+function makeItem(parent, title, details) {
+  const box = document.createElement("div");
+  box.className = "item";
+  const strong = document.createElement("strong");
+  strong.textContent = title;
+  const p = document.createElement("p");
+  p.textContent = details;
+  box.append(strong, p);
+  parent.appendChild(box);
+  return box;
+}
+
+async function loadLevels() {
+  const area = element("levels");
+  const select = element("level");
+
+  area.replaceChildren();
+  select.replaceChildren(new Option("Selecciona un nivel", ""));
+
+  const {data, error} = await db
+    .from("levels")
+    .select("id,name,points")
+    .order("created_at", {ascending:false});
+
+  if (error) {
+    area.textContent = "No se pudieron cargar los niveles.";
     return;
   }
 
-  levels.forEach(level => {
-    area.innerHTML += `
-      <div class="item">
-        <strong>${level.name}</strong>
-        <p>${level.points} puntos</p>
-      </div>`;
+  currentLevels = data || [];
+
+  if (!currentLevels.length) {
+    area.textContent = "Todavía no hay niveles agregados.";
+    return;
+  }
+
+  currentLevels.forEach(level => {
+    makeItem(area, level.name, level.points + " puntos");
+    select.add(new Option(level.name, level.id));
   });
 }
 
-function showTop() {
+async function loadTop() {
+  const area = element("leaderboard");
+  area.replaceChildren();
+
+  const {data, error} = await db
+    .from("records")
+    .select("player_name,level_id,levels(points)")
+    .eq("status", "approved");
+
+  if (error) {
+    area.textContent = "No se pudo cargar el ranking.";
+    return;
+  }
+
   const scores = {};
 
-  records.filter(r => r.approved).forEach(r => {
-    scores[r.player] = (scores[r.player] || 0) + r.points;
+  (data || []).forEach(record => {
+    const points = record.levels?.points || 0;
+    scores[record.player_name] =
+      (scores[record.player_name] || 0) + points;
   });
 
   const sorted = Object.entries(scores)
     .sort((a,b) => b[1] - a[1]);
 
-  const area = document.getElementById("leaderboard");
-  area.innerHTML = "";
-
   if (!sorted.length) {
-    area.innerHTML = '<p class="muted">Todavía no hay jugadores.</p>';
+    area.textContent = "Todavía no hay jugadores.";
     return;
   }
 
-  sorted.forEach(([name, points], i) => {
-    area.innerHTML += `
-      <div class="item">
-        #${i + 1} — <strong>${name}</strong>
-        <span style="float:right">${points} pts</span>
-      </div>`;
+  sorted.forEach(([name, points], index) => {
+    makeItem(area, "#" + (index + 1) + " — " + name, points + " puntos");
   });
 }
 
-document.getElementById("recordForm").addEventListener("submit", e => {
-  e.preventDefault();
+async function loadAdminRecords() {
+  const area = element("pendingRecords");
+  area.replaceChildren();
+
+  const {data, error} = await db
+    .from("records")
+    .select("id,player_name,country,video_url,description,status,levels(name,points)")
+    .order("created_at", {ascending:false});
+
+  if (error) {
+    area.textContent = "No se pudieron cargar los récords.";
+    return;
+  }
+
+  const records = data || [];
+
+  if (!records.length) {
+    area.textContent = "Todavía no hay récords enviados.";
+    return;
+  }
+
+  records.forEach(record => {
+    const box = makeItem(
+      area,
+      record.player_name + " — " + record.status,
+      "País: " + record.country +
+      " | Nivel: " + (record.levels?.name || "Desconocido") +
+      " | Puntos: " + (record.levels?.points || 0) +
+      (record.description ? " | " + record.description : "")
+    );
+
+    const link = document.createElement("a");
+    link.href = record.video_url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = "Ver video";
+    link.style.color = "#8295ff";
+    box.appendChild(link);
+
+    if (record.status === "pending") {
+      const approve = document.createElement("button");
+      approve.textContent = "Aprobar récord";
+      approve.onclick = () => updateRecord(record.id, "approved");
+
+      const reject = document.createElement("button");
+      reject.textContent = "Rechazar récord";
+      reject.style.background = "#a33";
+      reject.onclick = () => updateRecord(record.id, "rejected");
+
+      box.append(approve, reject);
+    }
+  });
+}
+
+async function updateRecord(id, status) {
+  const {error} = await db
+    .from("records")
+    .update({status})
+    .eq("id", id);
+
+  if (error) {
+    alert("No se pudo actualizar el récord: " + error.message);
+    return;
+  }
+
+  await loadAdminRecords();
+  await loadTop();
+}
+
+element("recordForm").addEventListener("submit", async event => {
+  event.preventDefault();
 
   const record = {
-    player: document.getElementById("player").value,
-    country: document.getElementById("country").value,
-    video: document.getElementById("video").value,
-    level: document.getElementById("level").value,
-    description: document.getElementById("description").value,
-    points: 0,
-    approved: false
+    player_name: element("player").value.trim(),
+    country: element("country").value.trim(),
+    video_url: element("video").value.trim(),
+    level_id: Number(element("level").value),
+    description: element("description").value.trim(),
+    status: "pending"
   };
 
-  records.push(record);
+  const {error} = await db.from("records").insert(record);
 
-  document.getElementById("message").textContent =
-    "Récord recibido en esta demostración. Aún necesita aprobación.";
+  if (error) {
+    element("message").textContent = "Error al enviar: " + error.message;
+    return;
+  }
 
-  e.target.reset();
-  showTop();
+  element("message").textContent =
+    "Récord enviado. Está pendiente de aprobación.";
+
+  event.target.reset();
 });
 
-showLevels();
-showTop();
+element("loginForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const {error} = await db.auth.signInWithPassword({
+    email: element("email").value,
+    password: element("password").value
+  });
+
+  if (error) {
+    element("loginMessage").textContent =
+      "No se pudo iniciar sesión: " + error.message;
+  }
+});
+
+element("logout").addEventListener("click", async () => {
+  await db.auth.signOut();
+});
+
+element("levelForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const {error} = await db.from("levels").insert({
+    name: element("newLevel").value.trim(),
+    points: Number(element("newPoints").value)
+  });
+
+  if (error) {
+    element("levelMessage").textContent =
+      "No se pudo agregar: " + error.message;
+    return;
+  }
+
+  element("levelMessage").textContent = "Nivel agregado.";
+  event.target.reset();
+  await loadLevels();
+});
+
+async function updateSession() {
+  const {data} = await db.auth.getSession();
+  const session = data.session;
+
+  if (!session) {
+    element("loginArea").classList.remove("hidden");
+    element("adminArea").classList.add("hidden");
+    return;
+  }
+
+  const {data: admin, error} = await db
+    .from("admins")
+    .select("user_id")
+    .eq("user_id", session.user.id)
+    .maybeSingle();
+
+  if (error || !admin) {
+    element("loginArea").classList.remove("hidden");
+    element("adminArea").classList.add("hidden");
+    element("loginMessage").textContent =
+      "Esta cuenta no tiene permisos de administrador.";
+    await db.auth.signOut();
+    return;
+  }
+
+  element("loginArea").classList.add("hidden");
+  element("adminArea").classList.remove("hidden");
+  await loadAdminRecords();
+}
+
+db.auth.onAuthStateChange(() => {
+  setTimeout(updateSession, 0);
+});
+
+async function start() {
+  await loadLevels();
+  await loadTop();
+  await updateSession();
+}
+
+start();
 </script>
 </body>
 </html>
-
